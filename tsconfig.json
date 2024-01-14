@@ -19,6 +19,10 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
 
-    "experimentalDecorators": true
-  }
+    "experimentalDecorators": true,
+    "paths": {
+      "microfont": ["./index.ts"],
+      "microfont/src/*": ["./src/*"],
+    }
+  },
 }
