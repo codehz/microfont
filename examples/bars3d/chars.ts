@@ -1,0 +1,12 @@
+export const c0 = "0".charCodeAt(0);
+export const c1 = "1".charCodeAt(0);
+export const c2 = "2".charCodeAt(0);
+export const c3 = "3".charCodeAt(0);
+export const c4 = "4".charCodeAt(0);
+export const c5 = "5".charCodeAt(0);
+export const c6 = "6".charCodeAt(0);
+export const c7 = "7".charCodeAt(0);
+export const c8 = "8".charCodeAt(0);
+export const c9 = "9".charCodeAt(0);
+export const cplus = "+".charCodeAt(0);
+export const cequal = "=".charCodeAt(0);
