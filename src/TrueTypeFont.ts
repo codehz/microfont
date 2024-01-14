@@ -1,10 +1,8 @@
 import { MacintoshEncodingID } from "./enum/MacintoshEncodingID";
 import { NameID } from "./enum/NameID";
 import { PlatformID } from "./enum/PlatformID";
-import { UnicodeEncodingID } from "./enum/UnicodeEncodingID";
 import { WindowsEncodingID } from "./enum/WindowsEncodingID";
 import Font from "./struct/Font";
-import DSIG from "./tables/DSIG";
 import OS_2 from "./tables/OS_2";
 import type cmap from "./tables/cmap";
 import glyf, { GlyphHeader } from "./tables/glyf";
@@ -15,7 +13,6 @@ import loca from "./tables/loca";
 import maxp from "./tables/maxp";
 import { name, type NameDef } from "./tables/name";
 import post from "./tables/post";
-import { aparray } from "./utils/aparray";
 
 export { SimpleGlyphTable as SimpleGlyph } from "./tables/glyf";
 
