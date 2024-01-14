@@ -3,3 +3,4 @@ export { encodeIntoArrayBuffer } from "./src/encoder";
 export * from "./src/tables/cmap";
 export * from "./src/tables/GSUB";
 export * from "./src/tables/common";
+export * from "./src/utils/checksum";

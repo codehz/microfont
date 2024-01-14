@@ -1,4 +1,5 @@
 import { Encode, encodeIntoArrayBufferWithAlign } from "../encoder";
+import { calcChecksum } from "../utils/checksum";
 import TableDirectory from "./TableDirectory";
 import TableRecord from "./TableRecord";
 
@@ -25,19 +26,10 @@ export default class Font extends TableDirectory {
       const [length, encoded] = encodeIntoArrayBufferWithAlign(table, 4);
       this.cached = Buffer.concat([this.cached, new Uint8Array(encoded)]);
       record.offset = offset;
-      record.checksum = calcTableChecksum(encoded);
+      record.checksum = calcChecksum(encoded);
       record.length = length;
       offset += encoded.byteLength;
       return record;
     });
   }
-}
-
-function calcTableChecksum(table: ArrayBuffer) {
-  const arr = new DataView(table);
-  let sum = 0;
-  for (let i = 0; i < arr.byteLength; i += 4) {
-    sum = (sum + arr.getUint32(i)) % 0x1_00_00_00_00;
-  }
-  return sum;
 }
