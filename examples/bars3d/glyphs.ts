@@ -1,20 +1,27 @@
 import { SimpleGlyph, type CharacterMap } from "microfont";
-import { c0, cequal, cplus } from "./chars";
+import { c0, cequal, cplus, cspace } from "./chars";
 import { font, units } from "./font";
 
 const shift = 72;
 const step = 8;
-const equal = font.addGlyph(
+export const equal = font.addGlyph(
   new SimpleGlyph({ contours: [], xMin: 0, xMax: 0, yMin: 0, yMax: 0 }),
   {
     advanceWidth: 0,
     leftSideBearing: 0,
   }
 );
-const plus = font.addGlyph(
+export const plus = font.addGlyph(
   new SimpleGlyph({ contours: [], xMin: 0, xMax: 0, yMin: 0, yMax: 0 }),
   {
     advanceWidth: 0,
+    leftSideBearing: 0,
+  }
+);
+export const space = font.addGlyph(
+  new SimpleGlyph({ contours: [], xMin: 0, xMax: 0, yMin: 0, yMax: 0 }),
+  {
+    advanceWidth: units / 2,
     leftSideBearing: 0,
   }
 );
@@ -27,6 +34,7 @@ export const base = font.addGlyph(
 );
 export const maps: CharacterMap[] = [
   { code: c0, glyphId: base },
+  { code: cspace, glyphId: space },
   { code: cplus, glyphId: plus },
   { code: cequal, glyphId: equal },
 ];

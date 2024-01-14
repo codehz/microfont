@@ -56,6 +56,19 @@ export const Encode = Object.freeze(
         },
       });
     },
+    nullable() {
+      return generateEncodeDecorator({
+        sizeof(value) {
+          if (value == null) return 0;
+          if (value instanceof Fixupable) value.fixup();
+          return sizeof(value, 0);
+        },
+        encode(value, view, offset) {
+          if (value == null) return offset;
+          return encode(value, view, offset, fieldsof(value.constructor), true);
+        },
+      });
+    },
     array(type: Object, align: number = 0) {
       const fields = fieldsof(type);
       return generateEncodeDecorator({

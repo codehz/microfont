@@ -8,5 +8,6 @@ export const c6 = "6".charCodeAt(0);
 export const c7 = "7".charCodeAt(0);
 export const c8 = "8".charCodeAt(0);
 export const c9 = "9".charCodeAt(0);
+export const cspace = " ".charCodeAt(0);
 export const cplus = "+".charCodeAt(0);
 export const cequal = "=".charCodeAt(0);

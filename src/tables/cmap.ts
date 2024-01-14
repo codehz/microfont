@@ -1,4 +1,5 @@
 import { Encode, sizeof } from "../encoder";
+import { MacintoshEncodingID } from "../enum/MacintoshEncodingID";
 import { PlatformID } from "../enum/PlatformID";
 import { UnicodeEncodingID } from "../enum/UnicodeEncodingID";
 import { WindowsEncodingID } from "../enum/WindowsEncodingID";
@@ -10,13 +11,13 @@ export class EncodingRecord {
   platformID: PlatformID = PlatformID.Unicode;
   /** Platform-specific encoding ID. */
   @Encode.uint16
-  encodingID: UnicodeEncodingID | WindowsEncodingID = 0;
+  encodingID: UnicodeEncodingID | WindowsEncodingID | MacintoshEncodingID = 0;
   /** Byte offset from beginning of table to the subtable for this encoding. */
   @Encode.Offset32
   subtableOffset: number = 0;
   constructor(
     platformID: PlatformID,
-    encodingID: UnicodeEncodingID | WindowsEncodingID,
+    encodingID: UnicodeEncodingID | WindowsEncodingID | MacintoshEncodingID,
     subtableOffset: number
   ) {
     this.platformID = platformID;
