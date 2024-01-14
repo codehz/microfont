@@ -172,6 +172,8 @@ export class TrueTypeFont extends Font {
       .reduce((a, b) => Math.max(a, b), -Infinity);
     const useLong = this.#loca.update(this.#glyf.offsets);
     this.#head.indexToLocFormat = useLong ? 1 : 0;
+    this.#head.created = this.#head.modified =
+      Math.round(new Date().getTime() / 1000) + 2_082_844_800;
     this.#maxp.numGlyphs = this.#glyf.glyphs.length;
     this.#maxp.maxPoints = this.#glyf.maxPoints;
     this.#maxp.maxContours = this.#glyf.maxContours;
