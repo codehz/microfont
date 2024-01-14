@@ -26,8 +26,8 @@ export default class Font extends TableDirectory {
       this.cached = Buffer.concat([this.cached, new Uint8Array(encoded)]);
       record.offset = offset;
       record.checksum = calcTableChecksum(encoded);
-      offset += record.length = length;
-      offset = offset % 4 === 0 ? offset : offset + 4 - (offset % 4);
+      record.length = length;
+      offset += encoded.byteLength;
       return record;
     });
   }
