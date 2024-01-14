@@ -1,6 +1,7 @@
 import { SimpleGlyph, TrueTypeFont } from "./src/TrueTypeFont";
 import { encodeIntoArrayBuffer } from "./src/encoder";
 import { cmapBmp, cmap_subtable_format4 } from "./src/tables/cmap";
+import { calcChecksum } from "./src/utils/checksum";
 
 const font = new TrueTypeFont({
   unitsPerEm: 32,
@@ -74,6 +75,19 @@ font.addGlyph(
         ],
       },
     ],
+    xMin: 0,
+    yMin: 0,
+    xMax: 32,
+    yMax: 32,
+  }),
+  {
+    advanceWidth: 32,
+    leftSideBearing: 0,
+  }
+);
+font.addGlyph(
+  new SimpleGlyph({
+    contours: [],
     xMin: 0,
     yMin: 0,
     xMax: 32,
