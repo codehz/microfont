@@ -25,7 +25,6 @@ export default class Font extends TableDirectory {
       const [length, encoded] = encodeIntoArrayBufferWithAlign(table, 4);
       this.cached = Buffer.concat([this.cached, new Uint8Array(encoded)]);
       record.offset = offset;
-      console.log(name);
       record.checksum = calcTableChecksum(encoded);
       offset += record.length = length;
       offset = offset % 4 === 0 ? offset : offset + 4 - (offset % 4);
