@@ -108,7 +108,7 @@ export class cmap_subtable_format4 extends SubTable16 {
     }
     this.startCode.push(0xff_ff);
     this.endCode.push(0xff_ff);
-    this.idDelta.push(0);
+    this.idDelta.push(1);
     this.idRangeOffset.push(0);
   }
 }
