@@ -28,7 +28,6 @@ export class TrueTypeFont extends Font {
   #loca = new loca();
   #glyf = new glyf();
   #post = new post();
-  #DSIG = new DSIG();
   constructor({
     unitsPerEm,
     ascender = unitsPerEm,
@@ -156,7 +155,6 @@ export class TrueTypeFont extends Font {
     this.setTable("loca", this.#loca);
     this.setTable("glyf", this.#glyf);
     this.setTable("post", this.#post);
-    this.setTable("DSIG", this.#DSIG);
   }
 
   fixup(): void {
@@ -221,8 +219,5 @@ export class TrueTypeFont extends Font {
   }
   get post() {
     return this.#post;
-  }
-  get DSIG() {
-    return this.#DSIG;
   }
 }
