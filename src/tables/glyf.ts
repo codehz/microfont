@@ -1,4 +1,4 @@
-import { Encode, encodeIntoArrayBuffer, sizeof } from "../encoder";
+import { Encode, sizeof } from "../encoder";
 
 export enum GlyphBitFlags {
   None = 0,
@@ -10,6 +10,23 @@ export enum GlyphBitFlags {
   PositiveYShortVector = 1 << 5,
   XSame = 1 << 4,
   YSame = 1 << 5,
+}
+
+function debugGlyphBitFlags(flags: GlyphBitFlags) {
+  let str = "";
+  if (flags & GlyphBitFlags.OnCurve) str += "OnCurve ";
+  if (flags & GlyphBitFlags.XShortVector) {
+    str += "XShortVector ";
+    if (flags & GlyphBitFlags.PositiveXShortVector)
+      str += "PositiveXShortVector ";
+  } else if (flags & GlyphBitFlags.XSame) str += "XSame ";
+  if (flags & GlyphBitFlags.YShortVector) {
+    str += "YShortVector ";
+    if (flags & GlyphBitFlags.PositiveYShortVector)
+      str += "PositiveYShortVector ";
+  } else if (flags & GlyphBitFlags.YSame) str += "YSame ";
+  if (flags & GlyphBitFlags.Repeat) str += "Repeat ";
+  return str;
 }
 
 export class GlyphHeader {
@@ -27,8 +44,7 @@ export class GlyphHeader {
   constructor(numberOfContours: number) {
     this.numberOfContours = numberOfContours;
   }
-  maxPoints = 0;
-  contourCount = 0;
+  $maxPoints = 0;
 }
 
 export interface GlyphPoint {
@@ -72,10 +88,9 @@ export class SimpleGlyphTable extends GlyphHeader {
     yMax: number;
   }) {
     super(contours.length);
-    this.maxPoints = contours
+    this.$maxPoints = contours
       .map((contour) => contour.points.length)
       .reduce((a, b) => Math.max(a, b), 0);
-    this.contourCount = contours.length;
     this.xMin = xMin;
     this.yMin = yMin;
     this.xMax = xMax;
@@ -117,7 +132,7 @@ export class SimpleGlyphTable extends GlyphHeader {
             }
             continue;
           } else {
-            if (lastdiff.x === diff.x) {
+            if (lastpoint.x === point.x) {
               flag |= GlyphBitFlags.XSame;
             } else if (diff.x >= -255 && diff.x <= 255) {
               flag |= GlyphBitFlags.XShortVector;
@@ -130,7 +145,7 @@ export class SimpleGlyphTable extends GlyphHeader {
               xcoordview.setInt16(xcoordpos, diff.x);
               xcoordpos += 2;
             }
-            if (lastdiff.y === diff.y) {
+            if (lastpoint.y === point.y) {
               flag |= GlyphBitFlags.YSame;
             } else if (diff.y >= -255 && diff.y <= 255) {
               flag |= GlyphBitFlags.YShortVector;
@@ -170,6 +185,7 @@ export class SimpleGlyphTable extends GlyphHeader {
         }
         lastdiff = diff;
         repeat = false;
+        // console.log(debugGlyphBitFlags(flag));
         flags.push(flag);
         lastpoint = point;
       }
@@ -194,19 +210,19 @@ export default class glyf {
       ],
       [0]
     );
-    console.log(this, offsets);
+    // console.log(this, offsets);
     return offsets;
   }
 
   get maxPoints() {
     return this.glyphs
-      .map((x) => x.maxPoints)
+      .map((x) => x.$maxPoints)
       .reduce((a, b) => Math.max(a, b), 0);
   }
 
   get maxContours() {
     return this.glyphs
-      .map((x) => x.contourCount)
+      .map((x) => x.numberOfContours)
       .reduce((a, b) => Math.max(a, b), 0);
   }
 }

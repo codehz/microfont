@@ -31,6 +31,8 @@ export class TrueTypeFont extends Font {
   #DSIG = new DSIG();
   constructor({
     unitsPerEm,
+    ascender = unitsPerEm,
+    descender = 0,
     FamilyName,
     SubfamilyName = "Regular",
     UniqueID,
@@ -40,6 +42,8 @@ export class TrueTypeFont extends Font {
     extraNames = [],
   }: {
     unitsPerEm: number;
+    ascender?: number;
+    descender?: number;
     FamilyName: string;
     SubfamilyName?: string;
     UniqueID: string;
@@ -50,6 +54,8 @@ export class TrueTypeFont extends Font {
   }) {
     super(0x00_01_00_00);
     this.#head.unitsPerEm = unitsPerEm;
+    this.#hhea.ascender = ascender;
+    this.#hhea.descender = descender;
     this.setTable("head", this.#head);
     this.setTable("hhea", this.#hhea);
     this.setTable("hmtx", this.#hmtx);
@@ -197,6 +203,9 @@ export class TrueTypeFont extends Font {
       new longHorMetric(matrics.advanceWidth, matrics.leftSideBearing)
     );
     return idx;
+  }
+  get glyphsCount() {
+    return this.#glyf.glyphs.length;
   }
   set cmap(cmap: cmap) {
     this.setTable("cmap", cmap);

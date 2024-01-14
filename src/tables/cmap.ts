@@ -32,6 +32,11 @@ export class cmap_subtable_format0 extends SubTable16 {
   glyphIdArray: Uint8Array = new Uint8Array(256);
 }
 
+export type CharacterMap = {
+  glyphId: number;
+  code: number;
+};
+
 export class cmap_subtable_format4 extends SubTable16 {
   @Encode.uint16
   readonly language: number = 0;
@@ -71,12 +76,12 @@ export class cmap_subtable_format4 extends SubTable16 {
   /** Glyph index array (arbitrary length) */
   @Encode.numarray(2, true)
   glyphIdArray: number[] = [];
-  constructor(mapping: { glyphId: number; code: number }[] = []) {
+  constructor(mapping: CharacterMap[] = []) {
     super(4);
     this.update(mapping);
   }
 
-  update(mapping: { glyphId: number; code: number }[]) {
+  update(mapping: CharacterMap[]) {
     this.startCode = [];
     this.endCode = [];
     this.idDelta = [];
@@ -107,7 +112,7 @@ export class cmap_subtable_format4 extends SubTable16 {
   }
 }
 
-function findContinuousSegments(sorted: { glyphId: number; code: number }[]) {
+function findContinuousSegments(sorted: CharacterMap[]) {
   const ret: { startCode: number; endCode: number; glyphIds: number[] }[] = [];
   let last = ret[0];
   for (const item of sorted) {
