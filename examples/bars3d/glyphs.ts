@@ -5,9 +5,40 @@ import { font, units } from "./font";
 const shift = 72;
 const step = 8;
 export const equal = font.addGlyph(
-  new SimpleGlyph({ contours: [], xMin: 0, xMax: 0, yMin: 0, yMax: 0 }),
+  new SimpleGlyph({
+    contours: [
+      {
+        points: [
+          {
+            x: 0,
+            y: units / 2,
+            onCurve: true,
+          },
+          {
+            x: shift,
+            y: 0,
+            onCurve: true,
+          },
+          {
+            x: shift * 2,
+            y: units / 2,
+            onCurve: true,
+          },
+          {
+            x: shift,
+            y: units,
+            onCurve: true
+          }
+        ],
+      },
+    ],
+    xMin: 0,
+    xMax: shift * 2,
+    yMin: 0,
+    yMax: units,
+  }),
   {
-    advanceWidth: 0,
+    advanceWidth: shift * 2,
     leftSideBearing: 0,
   }
 );
@@ -39,7 +70,7 @@ export const maps: CharacterMap[] = [
   { code: cequal, glyphId: equal },
 ];
 
-for (let i = 1; i < 1000; i++) {
+for (let i = 1; i <= 1000; i++) {
   const glyphId = font.addGlyph(
     new SimpleGlyph({
       contours: [
