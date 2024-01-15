@@ -90,9 +90,9 @@ export class Script extends Fixupable {
   @Encode.typed(TagRecordList)
   langSysList = new TagRecordList<LangSys>(2);
   fixup(): void {
-    const dftl = this.langSysList.list.find((x) => x.tag === "dftl");
-    if (dftl) {
-      this.defaultLangSysOffset = dftl.offset;
+    const dflt = this.langSysList.list.find((x) => x.tag === "dflt");
+    if (dflt) {
+      this.defaultLangSysOffset = dflt.offset;
     }
   }
   // /** Number of LangSysRecords for this script — excluding the default LangSys */
