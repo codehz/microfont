@@ -42,17 +42,33 @@ export class TagRecordList<T> extends XMap<string, T> {
     return [obj, idx] as const;
   }
 }
-
 export function arrayToOffsets<T>(
   input: T[],
   offset: number,
-  base: number = 2
-): number[] {
+  base?: number
+): number[];
+export function arrayToOffsets<
+  T,
+  R,
+  const Fn extends (input: T, offset: number) => [R, number]
+>(input: T[], offset: number, base: number, transform: Fn): R[];
+export function arrayToOffsets<T, R>(
+  input: T[],
+  offset: number,
+  base: number = 2,
+  transform?: (input: T, offset: number) => [R, number]
+): any[] {
   offset += base * input.length;
   return input.map((item) => {
-    const res = offset;
-    offset += sizeof(item);
-    return res;
+    if (transform) {
+      const [res, delta] = transform(item, offset);
+      offset += delta;
+      return res;
+    } else {
+      const res = offset;
+      offset += sizeof(item);
+      return res;
+    }
   });
 }
 
@@ -75,34 +91,16 @@ export function arrayToOffsets<T>(
 //   scriptRecords: CommonTagRecord[] = [];
 // }
 
-// export class LangSysRecord {
-//   @Encode.Tag
-//   langSysTag: string = "dflt";
-//   /** Offset to LangSys table, from beginning of Script table */
-//   @Encode.Offset16
-//   langSysOffset: number = 0;
-// }
-
-export class Script extends Fixupable {
-  /** Offset to default LangSys table, from beginning of Script table — may be NULL */
+export class LangSysRecord {
+  @Encode.Tag
+  langSysTag: string;
+  /** Offset to LangSys table, from beginning of Script table */
   @Encode.Offset16
-  defaultLangSysOffset: number = 0;
-  @Encode.typed(TagRecordList)
-  langSysList = new TagRecordList<LangSys>(2);
-  fixup(): void {
-    const dflt = this.langSysList.list.find((x) => x.tag === "dflt");
-    if (dflt) {
-      this.defaultLangSysOffset = dflt.offset;
-    }
+  langSysOffset: number;
+  constructor(tag: string, offset: number) {
+    this.langSysTag = tag;
+    this.langSysOffset = offset;
   }
-  // /** Number of LangSysRecords for this script — excluding the default LangSys */
-  // @Encode.uint16
-  // get langSysCount() {
-  //   return this.langSysRecords.length;
-  // }
-  // /** Array of LangSysRecords, listed alphabetically by LangSys tag */
-  // @Encode.array(CommonTagRecord)
-  // langSysRecords: CommonTagRecord[] = [];
 }
 
 export class LangSys {
@@ -120,6 +118,47 @@ export class LangSys {
   /** Array of indices into the FeatureList, in arbitrary order */
   @Encode.numarray(2)
   featureIndices: number[] = [];
+}
+
+export class Script {
+  #data: [string, LangSys][] = [];
+  /** Offset to default LangSys table, from beginning of Script table — may be NULL */
+  @Encode.Offset16
+  get defaultLangSysOffset(): number {
+    return this.defaultLangSys != null ? 4 + 6 * this.langSysCount : 0;
+  }
+  /** Number of LangSysRecords for this script — excluding the default LangSys */
+  @Encode.uint16
+  get langSysCount() {
+    return this.#data.length;
+  }
+  /** Array of LangSysRecords, listed alphabetically by LangSys tag */
+  @Encode.array(LangSysRecord)
+  get langSysRecords(): LangSysRecord[] {
+    return arrayToOffsets(
+      this.#data,
+      4 + sizeof.nullable(this.defaultLangSys),
+      6,
+      ([tag, feature], offset) => [
+        new LangSysRecord(tag, offset),
+        sizeof(feature),
+      ]
+    );
+  }
+  @Encode.nullable(LangSys)
+  defaultLangSys?: LangSys;
+  @Encode.array(LangSys)
+  get langSysList(): LangSys[] {
+    return this.#data.map((x) => x[1]);
+  }
+  addLangSys(tag: string, langSys: LangSys) {
+    this.#data.push([tag, langSys]);
+    return langSys;
+  }
+  setDefaultLangSys(langSys: LangSys) {
+    this.defaultLangSys = langSys;
+    return langSys;
+  }
 }
 
 export class FeatureRecord {
@@ -169,12 +208,10 @@ export class FeatureList {
   /** Array of FeatureRecords — zero-based (first feature has FeatureIndex = 0), listed alphabetically by feature tag */
   @Encode.array(FeatureRecord)
   get featureRecords(): FeatureRecord[] {
-    let offset = 2 + 6 * this.featureCount;
-    return this.#data.map(([tag, feature]) => {
-      const ret = new FeatureRecord(tag, offset);
-      offset += sizeof(feature);
-      return ret;
-    });
+    return arrayToOffsets(this.#data, 2, 6, ([tag, feature], offset) => [
+      new FeatureRecord(tag, offset),
+      sizeof(feature),
+    ]);
   }
   @Encode.array(Feature)
   get features(): Feature[] {
@@ -742,12 +779,15 @@ export class FeatureTableSubstitution extends XMap<number, Feature> {
   /** Array of feature table substitution records. */
   @Encode.array(FeatureTableSubstitutionRecord)
   get substitutions(): FeatureTableSubstitutionRecord[] {
-    let offset = 6 + 6 * this.substitutionCount;
-    return this.sortedEntries.map(([featureIndex, feature]) => {
-      const ret = new FeatureTableSubstitutionRecord(+featureIndex, offset);
-      offset += sizeof(feature);
-      return ret;
-    });
+    return arrayToOffsets(
+      this.sortedEntries,
+      6,
+      6,
+      ([featureIndex, feature], offset) => [
+        new FeatureTableSubstitutionRecord(+featureIndex, offset),
+        sizeof(feature),
+      ]
+    );
   }
   @Encode.array(Feature)
   get features(): Feature[] {

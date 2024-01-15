@@ -65,7 +65,7 @@ const twoLiga = gsub.lookupList.addLookup(4, (table) => {
 });
 const dflt = gsub.scriptList
   .add("DFLT", new Script())
-  .langSysList.add("dflt", new LangSys());
+  .setDefaultLangSys(new LangSys());
 dflt.featureIndices.push(
   gsub.featureList.add("liga", new Feature([fourLiga, threeLiga, twoLiga]))
 );

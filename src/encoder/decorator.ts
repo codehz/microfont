@@ -56,16 +56,17 @@ export const Encode = Object.freeze(
         },
       });
     },
-    nullable() {
+    nullable(type?: Object) {
+      const fields = type ? fieldsof(type) : undefined;
       return generateEncodeDecorator({
         sizeof(value) {
           if (value == null) return 0;
           if (value instanceof Fixupable) value.fixup();
-          return sizeof(value, 0);
+          return sizeof(value, 0, fields);
         },
         encode(value, view, offset) {
           if (value == null) return offset;
-          return encode(value, view, offset, fieldsof(value.constructor), true);
+          return encode(value, view, offset, fields, true);
         },
       });
     },

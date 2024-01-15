@@ -86,6 +86,23 @@ export function sizeof(
   return size;
 }
 
+sizeof.nullable = function sizeof(
+  input: any,
+  align = 0,
+  fields = fieldsof(input.constructor)
+) {
+  if (input == null) return 0;
+  let size = 0;
+  for (const [prop, encoder] of Object.entries(fields)) {
+    size +=
+      typeof encoder.sizeof === "number"
+        ? encoder.sizeof
+        : encoder.sizeof(input[prop]);
+  }
+  if (align) return size % align === 0 ? size : size + align - (size % align);
+  return size;
+};
+
 export function offsetof(input: any, targetProp: string) {
   const fields = fieldsof(input.constructor);
   let size = 0;
